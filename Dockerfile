@@ -22,4 +22,6 @@ FROM alpine:3.17
 RUN apk add --no-cache dnsmasq
 COPY --from=builder /workspace/dnsmasq-controller /dnsmasq-controller
 
+RUN "sed -i '/^local-service$/s/^/#/' /etc/dnsmasq.conf"
+
 ENTRYPOINT ["/dnsmasq-controller"]
