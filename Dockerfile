@@ -25,7 +25,7 @@ COPY --from=builder /workspace/dnsmasq-controller /dnsmasq-controller
 RUN sed -i '/^local-service$/s/^/#/' /etc/dnsmasq.conf
 
 RUN mkdir -p /var/lib/tftpboot/
-RUN wget https://github.com/jValdron/ipxe-https/raw/main/ipxe.efi -o /var/lib/tftpboot/ipxe.efi
-RUN wget https://github.com/jValdron/ipxe-https/raw/main/undionly.kpxe -o /var/lib/tftpboot/undionly.kpxe
+ADD https://github.com/jValdron/ipxe-https/raw/main/ipxe.efi /var/lib/tftpboot/ipxe.efi
+ADD https://github.com/jValdron/ipxe-https/raw/main/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
 
 ENTRYPOINT ["/dnsmasq-controller"]
