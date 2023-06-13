@@ -27,5 +27,6 @@ RUN sed -i '/^local-service$/s/^/#/' /etc/dnsmasq.conf
 RUN mkdir -p /var/lib/tftpboot/
 ADD https://github.com/jValdron/ipxe-https/raw/main/ipxe.efi /var/lib/tftpboot/ipxe.efi
 ADD https://github.com/jValdron/ipxe-https/raw/main/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
+RUN chmod -R 777 /var/lib/tftpboot/
 
 ENTRYPOINT ["/dnsmasq-controller"]
