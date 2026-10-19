@@ -1,5 +1,5 @@
 # Build the dnsmasq-controller binary
-FROM golang:1.22.7 AS builder
+FROM golang:1.27.2 AS builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
@@ -21,7 +21,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o dnsmasq-
 # Load distroless base to get initial passwd/group files
 FROM gcr.io/distroless/static-debian12:latest AS app
 
-# Install dnsmasq 
+# Install dnsmasq
 FROM alpine:3.19.1 AS dnsmasq
 # Use distroless passwd/group
 COPY --from=app /etc/passwd /etc/passwd
@@ -41,8 +41,8 @@ COPY --from=builder /workspace/dnsmasq-controller /dnsmasq-controller
 RUN sed -i '/^local-service$/s/^/#/' /etc/dnsmasq.conf
 
 RUN mkdir -p /var/lib/tftpboot/
-ADD https://github.com/jValdron/ipxe-https/raw/main/ipxe.efi /var/lib/tftpboot/ipxe.efi
-ADD https://github.com/jValdron/ipxe-https/raw/main/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
+ADD https://boot.ipxe.org/x86_64-efi/ipxe.efi /var/lib/tftpboot/ipxe.efi
+ADD https://boot.ipxe.org/x86_64-pcbios/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
 RUN chmod -R 777 /var/lib/tftpboot/
 
 ENTRYPOINT ["/dnsmasq-controller"]

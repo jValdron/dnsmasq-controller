@@ -26,7 +26,10 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/clientcmd"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	logrzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	dnsmasqv1beta1 "github.com/kvaps/dnsmasq-controller/api/v1beta1"
 	"github.com/kvaps/dnsmasq-controller/controllers"
@@ -97,15 +100,27 @@ func main() {
 
 	server.Start()
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                  scheme,
-		Namespace:               config.WatchNamespace,
-		MetricsBindAddress:      config.MetricsAddr,
-		Port:                    9443,
+	mgrOpts := ctrl.Options{
+		Scheme: scheme,
+		Metrics: metricsserver.Options{
+			BindAddress: config.MetricsAddr,
+		},
+		WebhookServer: webhook.NewServer(webhook.Options{
+			Port: 9443,
+		}),
 		LeaderElection:          config.EnableLeaderElection,
 		LeaderElectionID:        config.LeaderElectionID,
 		LeaderElectionNamespace: config.MyNamespace,
-	})
+	}
+	if config.WatchNamespace != "" {
+		mgrOpts.Cache = cache.Options{
+			DefaultNamespaces: map[string]cache.Config{
+				config.WatchNamespace: {},
+			},
+		}
+	}
+
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), mgrOpts)
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)

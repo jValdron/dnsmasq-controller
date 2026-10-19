@@ -9,7 +9,7 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
-CONTROLLER_GEN = go run sigs.k8s.io/controller-tools/cmd/controller-gen@v0.8.0
+CONTROLLER_GEN = go run sigs.k8s.io/controller-tools/cmd/controller-gen@v0.16.5
 
 all: manager
 

@@ -40,8 +40,7 @@ type DnsmasqOptionsReconciler struct {
 
 // +kubebuilder:rbac:groups=dnsmasq.kvaps.cf,resources=dnsmasqoptions,verbs=get;list;watch
 
-func (r *DnsmasqOptionsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
+func (r *DnsmasqOptionsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = r.Log.WithValues("dnsmasqconfiguration", req.NamespacedName)
 	config := conf.GetConfig()
 
@@ -49,7 +48,7 @@ func (r *DnsmasqOptionsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 	tmpConfigFile := config.DnsmasqConfDir + "/." + req.Namespace + "-" + req.Name + ".conf.tmp"
 
 	res := &dnsmasqv1beta1.DnsmasqOptions{}
-	err := r.Client.Get(context.TODO(), req.NamespacedName, res)
+	err := r.Client.Get(ctx, req.NamespacedName, res)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found

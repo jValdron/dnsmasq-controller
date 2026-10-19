@@ -54,7 +54,7 @@ func TestConfig(f string) error {
 	}
 	err = cmd.Run()
 	if err != nil {
-		err = fmt.Errorf(string(stderr.Bytes()))
+		err = fmt.Errorf("%s", stderr.Bytes())
 	}
 	return err
 }

@@ -40,15 +40,14 @@ type DhcpHostsReconciler struct {
 
 // +kubebuilder:rbac:groups=dnsmasq.kvaps.cf,resources=dhcphosts,verbs=get;list;watch
 
-func (r *DhcpHostsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
+func (r *DhcpHostsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = r.Log.WithValues("dhcphost", req.NamespacedName)
 	config := conf.GetConfig()
 
 	configFile := config.DnsmasqConfDir + "/dhcp-hosts/" + req.Namespace + "-" + req.Name
 
 	res := &dnsmasqv1beta1.DhcpHosts{}
-	err := r.Client.Get(context.TODO(), req.NamespacedName, res)
+	err := r.Client.Get(ctx, req.NamespacedName, res)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found
